@@ -424,7 +424,7 @@ int push(lua_State *state) {
     printf("%s. Found '%s'\n", error, luat_to_string(lua_type(state, 2)));
   }
 
-  // Technically this method will work regardless, so all we need to do 
+  // Technically this method will work regardless, so all we need to do
   // is ensure a valid input state before we reach this part:
   struct stack *stack = stack_create();
   stack_init(stack);
@@ -501,13 +501,13 @@ int add(lua_State* state) {
       return 0;
     } else if (lua_type(state, 3) != LUA_TNUMBER) {
       char error[] = "[Lua] Error: expecting a 'number' for the 3rd argument "
-                     "'add' when type is 'slider'"; 
+                     "'add' when type is 'slider'";
       printf("%s. Found %s\n", error, luat_to_string(lua_type(state, 3)));
       stack_destroy(stack);
       return 0;
     }
 
-    // Push the slider width to the stack 
+    // Push the slider width to the stack
     stack_push(stack, lua_tostring(state, 3));
 
     // And the position as always.
@@ -523,18 +523,18 @@ int add(lua_State* state) {
       return 0;
     } else if (lua_type(state, 3) != LUA_TNUMBER) {
       char error[] = "[Lua] Error: expecting a 'number' for the 3rd argument "
-                     "'add' when type is 'graph'"; 
+                     "'add' when type is 'graph'";
       printf("%s. Found %s\n", error, luat_to_string(lua_type(state, 3)));
       stack_destroy(stack);
       return 0;
     } else if (lua_type(state, 4) != LUA_TTABLE) {
       char error[] = "[Lua] Error: expecting a 'table' for the 4th argument "
-                     "'add' when type is 'graph'"; 
+                     "'add' when type is 'graph'";
       printf("%s. Found %s\n", error, luat_to_string(lua_type(state, 3)));
       stack_destroy(stack);
       return 0;
     }
-    
+
     // Push the width to the stack
     stack_push(stack, lua_tostring(state, 3));
 
@@ -619,8 +619,7 @@ int remove_sbar(lua_State* state) {
 
 int move(lua_State* state) {
   if (lua_gettop(state) < 2
-      || (lua_type(state, 1) != LUA_TSTRING
-          && lua_type(state, 1) != LUA_TTABLE)
+      || lua_type(state, 1) != LUA_TSTRING
       || lua_type(state, 2) != LUA_TSTRING) {
     char error[] = "[Lua] Error: expecting a name and a string argument "
                    "for 'move'";
@@ -628,8 +627,11 @@ int move(lua_State* state) {
     return 0;
   }
 
-  const char* name = get_name_from_state(state);
+  const char* name = lua_tostring(state, 1);
   const char* location = lua_tostring(state, 2);
+
+  printf("[i] sketchybar: MOVE ARG 1 %s\n", name);
+  printf("[i] sketchybar: MOVE ARG 2 %s\n", location);
 
   struct stack* stack = stack_create();
   stack_init(stack);
