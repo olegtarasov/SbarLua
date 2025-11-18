@@ -25,6 +25,7 @@ lua_State* g_state;
 #define TRIGGER   "--trigger"
 #define PUSH      "--push"
 #define REMOVE    "--remove"
+#define MOVE      "--move"
 
 #define MACH_HELPER_FMT "git.lua.sketchybar%d"
 
@@ -613,7 +614,31 @@ int remove_sbar(lua_State* state) {
   stack_push(stack, name);
   stack_push(stack, REMOVE);
   sketchybar_call_log_and_cleanup(stack);
-  return 0;}
+  return 0;
+}
+
+int move(lua_State* state) {
+  if (lua_gettop(state) < 2
+      || (lua_type(state, 1) != LUA_TSTRING
+          && lua_type(state, 1) != LUA_TTABLE)
+      || lua_type(state, 2) != LUA_TSTRING) {
+    char error[] = "[Lua] Error: expecting a name and a string argument "
+                   "for 'move'";
+    printf("%s\n", error);
+    return 0;
+  }
+
+  const char* name = get_name_from_state(state);
+  const char* location = lua_tostring(state, 2);
+
+  struct stack* stack = stack_create();
+  stack_init(stack);
+  stack_push(stack, location);
+  stack_push(stack, name);
+  stack_push(stack, MOVE);
+  sketchybar_call_log_and_cleanup(stack);
+  return 0;
+}
 
 static void orphan_check() {
   if (getppid() == 1) exit(0);
@@ -827,6 +852,7 @@ static int os_execute_sig(lua_State *L) {
 static const struct luaL_Reg functions[] = {
     { "add", add },
     { "remove", remove_sbar },
+    { "move", move },
     { "set", set },
     { "bar", bar },
     { "default", defaults },
@@ -882,6 +908,9 @@ int luaopen_sketchybar(lua_State* L) {
 
   lua_pushcfunction(L, remove_sbar);
   lua_setfield(L, -2, "remove");
+
+  lua_pushcfunction(L, move);
+  lua_setfield(L, -2, "move");
 
   lua_pushcfunction(L, event_loop);
   lua_setfield(L, -2, "update");
