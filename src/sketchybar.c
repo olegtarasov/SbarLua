@@ -618,24 +618,27 @@ int remove_sbar(lua_State* state) {
 }
 
 int move(lua_State* state) {
-  if (lua_gettop(state) < 2
+  if (lua_gettop(state) < 3
       || lua_type(state, 1) != LUA_TSTRING
-      || lua_type(state, 2) != LUA_TSTRING) {
-    char error[] = "[Lua] Error: expecting a name and a string argument "
+      || lua_type(state, 2) != LUA_TSTRING
+      || lua_type(state, 3) != LUA_TSTRING) {
+    char error[] = "[Lua] Error: expecting a name, move direcrtion and a string argument "
                    "for 'move'";
     printf("%s\n", error);
     return 0;
   }
 
   const char* name = lua_tostring(state, 1);
-  const char* location = lua_tostring(state, 2);
+  const char* direction = lua_tostring(state, 2);
+  const char* location = lua_tostring(state, 3);
 
-  printf("[i] sketchybar: MOVE ARG 1 %s\n", name);
-  printf("[i] sketchybar: MOVE ARG 2 %s\n", location);
+  //printf("[i] sketchybar: MOVE ARG 1 %s\n", name);
+  //printf("[i] sketchybar: MOVE ARG 2 %s\n", location);
 
   struct stack* stack = stack_create();
   stack_init(stack);
   stack_push(stack, location);
+  stack_push(stack, direction);
   stack_push(stack, name);
   stack_push(stack, MOVE);
   sketchybar_call_log_and_cleanup(stack);
